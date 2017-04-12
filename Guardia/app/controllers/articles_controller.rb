@@ -5,11 +5,10 @@ class ArticlesController < ApplicationController
   # GET /articles.json
   def index
     @articles = Article.all
-
   end
 
   # GET /articles/1
-  # GET /articles/1.json
+  # GET /articles/1.jsorakn
   def show
   end
 
