@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
-  get 'articles/posts'
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+  resources :articles
   get 'application/hello'
+  root 'application#hello'
 end
