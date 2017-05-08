@@ -13,6 +13,13 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.nickname)
 
+    def user2Dict(self):
+        return {
+            "id": self.id,
+            "nickname": self.nickname,
+            "email": self.email,
+        }
+
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(64), index = True, unique = True)
@@ -29,3 +36,13 @@ class Article(db.Model):
 
     def __repr__(self):
         return '<Article-%d %r>' % (self.id, self.title)
+
+    def article2Dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "body": self.body,
+            "read_cnt": self.cnt,
+            "pub_date": self.pub_date,
+        }
