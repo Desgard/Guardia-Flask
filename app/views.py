@@ -12,14 +12,21 @@ def index():
     }
     return render_template("index.html",
         title = 'Home',
-        user = user)
+        user = user
+    )
 
 
-@app.route('/api/v1.0/user', methods=['GET'])
-def getUser():
+@app.route('/api/v1.0/getUsers', methods=['GET'])
+def getUsers():
     result = []
     for user in models.User.query.all():
         result.append(user.user2Dict())
-    return jsonify({'result':  result})
+    return jsonify({'result': result})
 
+@app.route('/api/v1.0/getPosts', methods=['GET'])
+def getPosts():
+    result = []
+    for post in models.Article.query.all():
+        result.append(post.article2Dict())
+    return jsonify({'result': result})
 

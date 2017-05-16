@@ -6,7 +6,7 @@ class User(db.Model):
     nickname = db.Column(db.String(64), index = True, unique = True)
     email = db.Column(db.String(120), index = True, unique = True)
 
-    def __init__(self, nickname, email):
+    def __init__(self, nickname = "", email = ""):
         self.nickname = nickname
         self.email = email
 
@@ -22,17 +22,18 @@ class User(db.Model):
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(64), index = True, unique = True)
-    author = db.Column(db.String(64), index = True, unique = True)
-    body = db.Column(db.Text, index = True, unique = True)
-    read_cnt = db.Column(db.Integer, index = True, unique = True)
+    title = db.Column(db.String(80))
+    author = db.Column(db.String(20))
+    body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
 
-    def __init__(self, title, author, body, read_cnt):
+    def __init__(self, title, author, body, read_cnt, pub_date = None):
         self.title = title
         self.author = author
         self.body = body
         self.read_cnt = read_cnt
+        if pub_date is None:
+            self.pub_date = datetime.utcnow()
 
     def __repr__(self):
         return '<Article-%d %r>' % (self.id, self.title)
