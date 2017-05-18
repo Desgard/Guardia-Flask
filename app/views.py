@@ -28,5 +28,9 @@ def getPosts():
     result = []
     for post in models.Article.query.all():
         result.append(post.article2Dict())
-    return jsonify({'result': result})
+    return jsonify({
+        'result': {
+            "posts": result,
+        }
+    })
 

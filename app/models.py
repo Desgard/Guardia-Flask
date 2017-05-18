@@ -23,11 +23,11 @@ class User(db.Model):
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(80))
-    author = db.Column(db.String(20))
+    author = db.Column(db.String(80), unique = False)
     body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
 
-    def __init__(self, title, author, body, read_cnt, pub_date = None):
+    def __init__(self, title = '', author = '', body = '', read_cnt = '', pub_date = None):
         self.title = title
         self.author = author
         self.body = body
@@ -44,6 +44,5 @@ class Article(db.Model):
             "title": self.title,
             "author": self.author,
             "body": self.body,
-            "read_cnt": self.cnt,
             "pub_date": self.pub_date,
         }
