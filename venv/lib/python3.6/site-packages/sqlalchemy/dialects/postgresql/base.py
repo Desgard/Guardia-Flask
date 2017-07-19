@@ -566,19 +566,30 @@ http://www.postgresql.org/docs/8.3/interactive/indexes-opclass.html).
 The :class:`.Index` construct allows these to be specified via the
 ``postgresql_ops`` keyword argument::
 
-    Index('my_index', my_table.c.id, my_table.c.data,
-                            postgresql_ops={
-                                'data': 'text_pattern_ops',
-                                'id': 'int4_ops'
-                            })
-
-.. versionadded:: 0.7.2
-    ``postgresql_ops`` keyword argument to :class:`.Index` construct.
+    Index(
+        'my_index', my_table.c.id, my_table.c.data,
+        postgresql_ops={
+            'data': 'text_pattern_ops',
+            'id': 'int4_ops'
+        })
 
 Note that the keys in the ``postgresql_ops`` dictionary are the "key" name of
 the :class:`.Column`, i.e. the name used to access it from the ``.c``
 collection of :class:`.Table`, which can be configured to be different than
 the actual name of the column as expressed in the database.
+
+If ``postgresql_ops`` is to be used against a complex SQL expression such
+as a function call, then to apply to the column it must be given a label
+that is identified in the dictionary by name, e.g.::
+
+    Index(
+        'my_index', my_table.c.id,
+        func.lower(my_table.c.data).label('data_lower'),
+        postgresql_ops={
+            'data_lower': 'text_pattern_ops',
+            'id': 'int4_ops'
+        })
+
 
 Index Types
 ^^^^^^^^^^^^
@@ -879,7 +890,7 @@ from sqlalchemy.types import INTEGER, BIGINT, SMALLINT, VARCHAR, \
     DATE, BOOLEAN, REAL
 
 AUTOCOMMIT_REGEXP = re.compile(
-    r'\s*(?:UPDATE|INSERT|CREATE|DELETE|DROP|ALTER|'
+    r'\s*(?:UPDATE|INSERT|CREATE|DELETE|DROP|ALTER|GRANT|REVOKE|'
     'IMPORT FOREIGN SCHEMA|REFRESH MATERIALIZED VIEW)',
     re.I | re.UNICODE)
 
@@ -1851,9 +1862,15 @@ class PGTypeCompiler(compiler.GenericTypeCompiler):
         return "BYTEA"
 
     def visit_ARRAY(self, type_, **kw):
-        return self.process(type_.item_type) + ('[]' * (type_.dimensions
-                                                        if type_.dimensions
-                                                        is not None else 1))
+
+        # TODO: pass **kw?
+        inner = self.process(type_.item_type)
+        return re.sub(
+            r'((?: COLLATE.*)?)$',
+            (r'[]\1' *
+             (type_.dimensions if type_.dimensions is not None else 1)),
+            inner
+        )
 
 
 class PGIdentifierPreparer(compiler.IdentifierPreparer):
@@ -2280,7 +2297,7 @@ class PGDialect(default.DefaultDialect):
         v = connection.execute("select version()").scalar()
         m = re.match(
             r'.*(?:PostgreSQL|EnterpriseDB) '
-            r'(\d+)\.?(\d+)?(?:\.(\d+))?(?:\.\d+)?(?:devel)?',
+            r'(\d+)\.?(\d+)?(?:\.(\d+))?(?:\.\d+)?(?:devel|beta)?',
             v)
         if not m:
             raise AssertionError(

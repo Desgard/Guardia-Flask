@@ -2200,26 +2200,34 @@ class Sequence(DefaultGenerator):
          reserved words take place.
         :param quote_schema: set the quoting preferences for the ``schema``
          name.
-        :param metadata: optional :class:`.MetaData` object which will be
-         associated with this :class:`.Sequence`.  A :class:`.Sequence`
-         that is associated with a :class:`.MetaData` gains access to the
-         ``bind`` of that :class:`.MetaData`, meaning the
-         :meth:`.Sequence.create` and :meth:`.Sequence.drop` methods will
-         make usage of that engine automatically.
 
-         .. versionchanged:: 0.7
-             Additionally, the appropriate CREATE SEQUENCE/
-             DROP SEQUENCE DDL commands will be emitted corresponding to this
-             :class:`.Sequence` when :meth:`.MetaData.create_all` and
-             :meth:`.MetaData.drop_all` are invoked.
+        :param metadata: optional :class:`.MetaData` object which this
+         :class:`.Sequence` will be associated with.  A :class:`.Sequence`
+         that is associated with a :class:`.MetaData` gains the following
+         capabilities:
 
-         Note that when a :class:`.Sequence` is applied to a :class:`.Column`,
-         the :class:`.Sequence` is automatically associated with the
-         :class:`.MetaData` object of that column's parent :class:`.Table`,
-         when that association is made.   The :class:`.Sequence` will then
-         be subject to automatic CREATE SEQUENCE/DROP SEQUENCE corresponding
-         to when the :class:`.Table` object itself is created or dropped,
-         rather than that of the :class:`.MetaData` object overall.
+         * The :class:`.Sequence` will inherit the :paramref:`.MetaData.schema`
+           parameter specified to the target :class:`.MetaData`, which
+           affects the production of CREATE / DROP DDL, if any.
+
+         * The :meth:`.Sequence.create` and :meth:`.Sequence.drop` methods
+           automatically use the engine bound to the :class:`.MetaData`
+           object, if any.
+
+         * The :meth:`.MetaData.create_all` and :meth:`.MetaData.drop_all`
+           methods will emit CREATE / DROP for this :class:`.Sequence`,
+           even if the :class:`.Sequence` is not associated with any
+           :class:`.Table` / :class:`.Column` that's a member of this
+           :class:`.MetaData`.
+
+         The above behaviors can only occur if the :class:`.Sequence` is
+         explicitly associated with the :class:`.MetaData` via this parameter.
+
+         .. seealso::
+
+            :ref:`sequence_metadata` - full discussion of the
+            :paramref:`.Sequence.metadata` parameter.
+
         :param for_update: Indicates this :class:`.Sequence`, when associated
          with a :class:`.Column`, should be invoked for UPDATE statements
          on that column's table, rather than for INSERT statements, when
@@ -2846,6 +2854,22 @@ class ForeignKeyConstraint(ColumnCollectionConstraint):
         self.link_to_name = link_to_name
         self.use_alter = use_alter
         self.match = match
+
+        if len(set(columns)) != len(refcolumns):
+            if len(set(columns)) != len(columns):
+                # e.g. FOREIGN KEY (a, a) REFERENCES r (b, c)
+                raise exc.ArgumentError(
+                    "ForeignKeyConstraint with duplicate source column "
+                    "references are not supported."
+                )
+            else:
+                # e.g. FOREIGN KEY (a) REFERENCES r (b, c)
+                # paraphrasing https://www.postgresql.org/docs/9.2/static/\
+                # ddl-constraints.html
+                raise exc.ArgumentError(
+                    "ForeignKeyConstraint number "
+                    "of constrained columns must match the number of "
+                    "referenced columns.")
 
         # standalone ForeignKeyConstraint - create
         # associated ForeignKey objects which will be applied to hosted
@@ -3481,6 +3505,31 @@ class MetaData(SchemaItem):
            or :class:`.Sequence` that still has ``None`` for the schema
            even when this parameter is present, use the :attr:`.BLANK_SCHEMA`
            symbol.
+
+           .. note::
+
+                As refered above, the :paramref:`.MetaData.schema` parameter
+                only refers to the **default value** that will be applied to
+                the :paramref:`.Table.schema` parameter of an incoming
+                :class:`.Table` object.   It does not refer to how the
+                :class:`.Table` is catalogued within the :class:`.MetaData`,
+                which remains consistent vs. a :class:`.MetaData` collection
+                that does not define this parameter.  The :class:`.Table`
+                within the :class:`.MetaData` will still be keyed based on its
+                schema-qualified name, e.g.
+                ``my_metadata.tables["some_schema.my_table"]``.
+
+                The current behavior of the :class:`.ForeignKey` object is to
+                circumvent this restriction, where it can locate a table given
+                the table name alone, where the schema will be assumed to be
+                present from this value as specified on the owning
+                :class:`.MetaData` collection.  However, this implies  that a
+                table qualified with BLANK_SCHEMA cannot currently be referred
+                to by string name from :class:`.ForeignKey`.    Other parts of
+                SQLAlchemy such as Declarative may not have similar behaviors
+                built in, however may do so in a future release, along with a
+                consistent method of referring to a table in BLANK_SCHEMA.
+
 
            .. seealso::
 

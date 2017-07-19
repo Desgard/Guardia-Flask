@@ -771,6 +771,20 @@ class IMAGE(sqltypes.LargeBinary):
     __visit_name__ = 'IMAGE'
 
 
+class XML(sqltypes.Text):
+    """MSSQL XML type.
+
+    This is a placeholder type for reflection purposes that does not include
+    any Python-side datatype support.   It also does not currently support
+    additional arguments, such as "CONTENT", "DOCUMENT",
+    "xml_schema_collection".
+
+    .. versionadded:: 1.1.11
+
+    """
+    __visit_name__ = 'XML'
+
+
 class BIT(sqltypes.TypeEngine):
     __visit_name__ = 'BIT'
 
@@ -839,6 +853,7 @@ ischema_names = {
     'bit': BIT,
     'real': REAL,
     'image': IMAGE,
+    'xml': XML,
     'timestamp': TIMESTAMP,
     'money': MONEY,
     'smallmoney': SMALLMONEY,
@@ -954,6 +969,9 @@ class MSTypeCompiler(compiler.GenericTypeCompiler):
 
     def visit_IMAGE(self, type_, **kw):
         return "IMAGE"
+
+    def visit_XML(self, type_, **kw):
+        return "XML"
 
     def visit_VARBINARY(self, type_, **kw):
         return self._extend(
@@ -1689,21 +1707,36 @@ class MSDialect(default.DefaultDialect):
             raise NotImplementedError(
                 "Can't fetch isolation level prior to SQL Server 2005")
 
-        cursor = connection.cursor()
-        cursor.execute("""
-          SELECT CASE transaction_isolation_level
-            WHEN 0 THEN NULL
-            WHEN 1 THEN 'READ UNCOMMITTED'
-            WHEN 2 THEN 'READ COMMITTED'
-            WHEN 3 THEN 'REPEATABLE READ'
-            WHEN 4 THEN 'SERIALIZABLE'
-            WHEN 5 THEN 'SNAPSHOT' END AS TRANSACTION_ISOLATION_LEVEL
-            FROM sys.dm_exec_sessions
-            where session_id = @@SPID
-          """)
-        val = cursor.fetchone()[0]
-        cursor.close()
-        return val.upper()
+        views = ("sys.dm_exec_sessions", "sys.dm_pdw_nodes_exec_sessions")
+        for view in views:
+            cursor = connection.cursor()
+            try:
+                cursor.execute("""
+                  SELECT CASE transaction_isolation_level
+                    WHEN 0 THEN NULL
+                    WHEN 1 THEN 'READ UNCOMMITTED'
+                    WHEN 2 THEN 'READ COMMITTED'
+                    WHEN 3 THEN 'REPEATABLE READ'
+                    WHEN 4 THEN 'SERIALIZABLE'
+                    WHEN 5 THEN 'SNAPSHOT' END AS TRANSACTION_ISOLATION_LEVEL
+                    FROM %s
+                    where session_id = @@SPID
+                  """ % view)
+                val = cursor.fetchone()[0]
+            except self.dbapi.Error as err:
+                continue
+            else:
+                return val.upper()
+            finally:
+                cursor.close()
+
+        util.warn(
+            "Could not fetch transaction isolation level, "
+            "tried views: %s; final error was: %s" % (views, err))
+        raise NotImplementedError(
+            "Can't fetch isolation level on this particular "
+            "SQL Server version"
+        )
 
     def initialize(self, connection):
         super(MSDialect, self).initialize(connection)

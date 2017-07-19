@@ -205,8 +205,8 @@ Most MySQL DBAPIs offer the option to set the client character set for
 a connection.   This is typically delivered using the ``charset`` parameter
 in the URL, such as::
 
-    e = create_engine("mysql+pymysql://scott:tiger@localhost/\
-test?charset=utf8")
+    e = create_engine(
+        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8")
 
 This charset is the **client character set** for the connection.  Some
 MySQL DBAPIs will default this to a value such as ``latin1``, and some
@@ -224,8 +224,8 @@ that includes codepoints more than three bytes in size,
 this new charset is preferred, if supported by both the database as well
 as the client DBAPI, as in::
 
-    e = create_engine("mysql+pymysql://scott:tiger@localhost/\
-test?charset=utf8mb4")
+    e = create_engine(
+        "mysql+pymysql://scott:tiger@localhost/test?charset=utf8mb4")
 
 At the moment, up-to-date versions of MySQLdb and PyMySQL support the
 ``utf8mb4`` charset.   Other DBAPIs such as MySQL-Connector and OurSQL
@@ -237,8 +237,8 @@ the MySQL schema and/or server configuration may be required.
 .. seealso::
 
     `The utf8mb4 Character Set \
-<http://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
-in the MySQL documentation
+    <http://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html>`_ - \
+    in the MySQL documentation
 
 Unicode Encoding / Decoding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -259,7 +259,8 @@ DBAPI's handling of unicode, such that it instead will return data of the
 ``str`` type or ``bytes`` type, with data in the configured charset::
 
     # connect while disabling the DBAPI's unicode encoding/decoding
-    e = create_engine("mysql+mysqldb://scott:tiger@localhost/test?charset=utf8&use_unicode=0")
+    e = create_engine(
+        "mysql+mysqldb://scott:tiger@localhost/test?charset=utf8&use_unicode=0")
 
 Current recommendations for modern DBAPIs are as follows:
 
@@ -408,7 +409,8 @@ storage engine.
 
 .. seealso::
 
-    `CREATE INDEX <http://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - MySQL documentation
+    `CREATE INDEX <http://dev.mysql.com/doc/refman/5.0/en/create-index.html>`_ - \
+    MySQL documentation
 
 Index Types
 ~~~~~~~~~~~~~
@@ -799,9 +801,6 @@ class MySQLCompiler(compiler.SQLCompiler):
     def visit_random_func(self, fn, **kw):
         return "rand%s" % self.function_argspec(fn)
 
-    def visit_utc_timestamp_func(self, fn, **kw):
-        return "UTC_TIMESTAMP"
-
     def visit_sysdate_func(self, fn, **kw):
         return "SYSDATE()"
 
@@ -1023,11 +1022,18 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
             if k.startswith('%s_' % self.dialect.name)
         )
 
+        partition_options = [
+            'PARTITION_BY', 'PARTITIONS', 'SUBPARTITIONS',
+            'SUBPARTITION_BY'
+        ]
+
+        nonpart_options = set(opts).difference(partition_options)
+        part_options = set(opts).intersection(partition_options)
+
         for opt in topological.sort([
             ('DEFAULT_CHARSET', 'COLLATE'),
             ('DEFAULT_CHARACTER_SET', 'COLLATE'),
-            ('PARTITION_BY', 'PARTITIONS'),  # only for test consistency
-        ], opts):
+        ], nonpart_options):
             arg = opts[opt]
             if opt in _reflection._options_of_type_string:
                 arg = "'%s'" % arg.replace("\\", "\\\\").replace("'", "''")
@@ -1035,16 +1041,33 @@ class MySQLDDLCompiler(compiler.DDLCompiler):
             if opt in ('DATA_DIRECTORY', 'INDEX_DIRECTORY',
                        'DEFAULT_CHARACTER_SET', 'CHARACTER_SET',
                        'DEFAULT_CHARSET',
-                       'DEFAULT_COLLATE', 'PARTITION_BY'):
+                       'DEFAULT_COLLATE'):
                 opt = opt.replace('_', ' ')
 
             joiner = '='
             if opt in ('TABLESPACE', 'DEFAULT CHARACTER SET',
-                       'CHARACTER SET', 'COLLATE',
-                       'PARTITION BY', 'PARTITIONS'):
+                       'CHARACTER SET', 'COLLATE'):
                 joiner = ' '
 
             table_opts.append(joiner.join((opt, arg)))
+
+        for opt in topological.sort([
+            ('PARTITION_BY', 'PARTITIONS'),
+            ('PARTITION_BY', 'SUBPARTITION_BY'),
+            ('PARTITION_BY', 'SUBPARTITIONS'),
+            ('PARTITIONS', 'SUBPARTITIONS'),
+            ('PARTITIONS', 'SUBPARTITION_BY'),
+            ('SUBPARTITION_BY', 'SUBPARTITIONS')
+        ], part_options):
+            arg = opts[opt]
+            if opt in _reflection._options_of_type_string:
+                arg = "'%s'" % arg.replace("\\", "\\\\").replace("'", "''")
+
+            opt = opt.replace('_', ' ')
+            joiner = ' '
+
+            table_opts.append(joiner.join((opt, arg)))
+
         return ' '.join(table_opts)
 
     def visit_create_index(self, create):
@@ -1625,13 +1648,21 @@ class MySQLDialect(default.DefaultDialect):
         """Proxy a result row to smooth over MySQL-Python driver
         inconsistencies."""
 
-        return _DecodingRowProxy(rp.fetchone(), charset)
+        row = rp.fetchone()
+        if row:
+            return _DecodingRowProxy(row, charset)
+        else:
+            return None
 
     def _compat_first(self, rp, charset=None):
         """Proxy a result row to smooth over MySQL-Python driver
         inconsistencies."""
 
-        return _DecodingRowProxy(rp.first(), charset)
+        row = rp.first()
+        if row:
+            return _DecodingRowProxy(row, charset)
+        else:
+            return None
 
     def _extract_error_code(self, exception):
         raise NotImplementedError()
@@ -1672,6 +1703,7 @@ class MySQLDialect(default.DefaultDialect):
 
     def initialize(self, connection):
         self._connection_charset = self._detect_charset(connection)
+        self._detect_sql_mode(connection)
         self._detect_ansiquotes(connection)
         if self._server_ansiquotes:
             # if ansiquotes == True, build a new IdentifierPreparer
@@ -1939,21 +1971,28 @@ class MySQLDialect(default.DefaultDialect):
                 collations[row[0]] = row[1]
         return collations
 
-    def _detect_ansiquotes(self, connection):
-        """Detect and adjust for the ANSI_QUOTES sql mode."""
-
+    def _detect_sql_mode(self, connection):
         row = self._compat_first(
             connection.execute("SHOW VARIABLES LIKE 'sql_mode'"),
             charset=self._connection_charset)
 
         if not row:
-            mode = ''
+            util.warn(
+                "Could not retrieve SQL_MODE; please ensure the "
+                "MySQL user has permissions to SHOW VARIABLES")
+            self._sql_mode = ''
         else:
-            mode = row[1] or ''
-            # 4.0
-            if mode.isdigit():
-                mode_no = int(mode)
-                mode = (mode_no | 4 == mode_no) and 'ANSI_QUOTES' or ''
+            self._sql_mode = row[1] or ''
+
+    def _detect_ansiquotes(self, connection):
+        """Detect and adjust for the ANSI_QUOTES sql mode."""
+
+        mode = self._sql_mode
+        if not mode:
+            mode = ''
+        elif mode.isdigit():
+            mode_no = int(mode)
+            mode = (mode_no | 4 == mode_no) and 'ANSI_QUOTES' or ''
 
         self._server_ansiquotes = 'ANSI_QUOTES' in mode
 
