@@ -1,13 +1,23 @@
-#!/usr/bin/env python
-# encoding: utf-8
-
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, MigrateCommand
+from config import config
+import os
 
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-from app import views, models
+db = SQLAlchemy()
+
+def create_app(config_name):
+    app = Flask(__name__)
+    app.config.from_object(config[config_name])
+    config[config_name].init_app(app)
+    db.init_app(app)
+
+    # Register Blueprint
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
+    with app.app_context():
+        db.create_all()
+
+    return app

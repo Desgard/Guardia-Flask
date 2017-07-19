@@ -2,7 +2,31 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# 数据库文件路径
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-# SQLAlchemy-migrate 数据文件存储位置
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+class config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'Beacon'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+    @staticmethod
+    def init_app(app):
+        pass
+
+class DevelopmentConfig(config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+    'sqlite:///' + os.path.join(basedir, 'data.db')
+
+class TestingConfig(config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
+    'sqlite:///' + os.path.join(basedir, 'test')
+
+class ProductionConfig(config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+
+config = {
+    'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}
