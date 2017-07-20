@@ -2,13 +2,14 @@ from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from app import db
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), index = True, unique = True)
     email = db.Column(db.String(120), index = True, unique = True)
 
-    def __init__(self, nickname, email):
+    def __init__(self, nickname = '', email = ''):
         self.nickname = nickname
         self.email = email
 
@@ -32,7 +33,7 @@ class Article(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref = db.backref('posts', lazy = 'dynamic'))
 
-    def __init__(self, title, body, category, pub_date = None):
+    def __init__(self, title = '', body = '', category = '', pub_date = None):
         self.title = title
         self.body = body
         self.category = category
@@ -57,7 +58,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(50))
 
-    def __init__(self, name):
+    def __init__(self, name = ''):
         self.name = name
 
     def __repr__(self):
