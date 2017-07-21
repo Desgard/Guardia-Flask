@@ -25,7 +25,6 @@ login_manager.init_app(app)
 class AdminModelView(ModelView):
     def is_accessible(self):
         if current_user.is_authenticated and current_user.nickname == 'Desgard_Duan':
-            print(current_user)
             return True
         return False
 

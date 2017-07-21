@@ -33,10 +33,10 @@ class Article(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref = db.backref('posts', lazy = 'dynamic'))
 
-    def __init__(self, title = '', body = '', category = '', pub_date = None):
+    def __init__(self, title = '', body = '', category_id = 1, pub_date = None):
         self.title = title
         self.body = body
-        self.category = category
+        self.category_id = category_id
         if pub_date is None:
             self.pub_date = datetime.utcnow()
         else:
@@ -51,7 +51,7 @@ class Article(db.Model):
             'author': self.author,
             'public_date': self.pub_date,
             'body': self.body,
-            'category': self.category,
+            'category': self.category_id,
         }
 
 class Category(db.Model):
