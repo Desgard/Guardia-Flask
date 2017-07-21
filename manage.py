@@ -8,21 +8,31 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
 
-admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Article, db.session))
-admin.add_view(ModelView(Category, db.session))
+
 
 # flask_login
 app.secret_key = '5Yas55Oc'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# flask_admin
+class AdminModelView(ModelView):
+    def is_accessible(self):
+        if current_user.is_authenticated and current_user.nickname == 'Desgard_Duan':
+            print(current_user)
+            return True
+        return False
+
+admin = Admin(app)
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(AdminModelView(Article, db.session))
+admin.add_view(AdminModelView(Category, db.session))
 
 @login_manager.user_loader
 def user_loader(id):

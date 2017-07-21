@@ -2,13 +2,12 @@ from . import main
 from flask import request, render_template, redirect, url_for
 from flask_login import login_required, login_user
 
-@main.route('/hello/')
-@login_required
+@main.route('/')
 def hello():
-    return '<h1>Guardia API</h1>'
+    return redirect(url_for('main.login'))
 
 @main.route('/login/', methods = ['GET', 'POST'])
-def test():
+def login():
     if request.method == 'GET':
         return render_template('login.html')
     nickname = request.form.get('nickname')
