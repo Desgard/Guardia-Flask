@@ -1,27 +1,43 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import Button from 'antd/lib/button';
 import './App.css';
+
+import { Layout, Menu, Breadcrumb } from 'antd';
+const { Header, Content, Footer } = Layout;
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <Button type="primary">Button</Button>
-        </div>
-      </div>
+      <Layout className="layout">
+        <Header style={{ position: 'fixed', width: '100%' }}>
+          <div className="logo" />
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={['2']}
+            style={{ lineHeight: '64px' }}
+          >
+            <Menu.Item key="1">nav 1</Menu.Item>
+            <Menu.Item key="2">nav 2</Menu.Item>
+            <Menu.Item key="3">nav 3</Menu.Item>
+          </Menu>
+        </Header>
+        <Content style={{ padding: '0 50px', marginTop: 64 }}>
+          <Breadcrumb style={{ margin: '12px 0' }}>
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            <Breadcrumb.Item>List</Breadcrumb.Item>
+            <Breadcrumb.Item>App</Breadcrumb.Item>
+          </Breadcrumb>
+          <div style={{ background: '#fff', padding: 24, minHeight: 380 }}>
+          </div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          ©2016 Created by Desgard_Duan. Design by Ant UED.
+        </Footer>
+      </Layout>
     );
   }
   componentWillMount() {
-    var _self = this;
-    window.setTimeout(function() {
-      _self.setState({
-        opacity: 0.5,
-        fontSize: '44px'
-      });
-    }, 1000)
   }
 }
 
