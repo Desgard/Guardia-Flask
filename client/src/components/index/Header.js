@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Drawer from 'material-ui/Drawer'; 
 import MenuItem from 'material-ui/MenuItem';
+
+import MenuOpen from '../button/MenuOpen';
+import MenuClose from '../button/MenuClose';
 
 export default class Header extends Component {
     constructor(props) {
@@ -29,15 +30,23 @@ export default class Header extends Component {
                     open={ this.state.open }
                     onRequestChange = { (open) => this.setState({ open })}
                 >
+                    <AppBar
+                        title="Menu"
+                        iconElementLeft = {
+                            <MenuClose />
+                        }
+                    />
                     <MenuItem onTouchTap={ this.handleClose }>Menu Item</MenuItem>
                     <MenuItem onTouchTap={ this.handleClose }>Menu Item 2</MenuItem>
                 </Drawer>
 
                 <AppBar
-                    title={ <span>Guardia</span> }
+                    title={ <span>Guardia · 瓜地</span> }
                     iconClassNameRight="muidocs-icon-navigation-expand-more"
-                    onLeftIconButtonTouchTap={this.handleToggle}
-                    iconElementLeft={<IconButton><NavigationClose /></IconButton>}
+                    onLeftIconButtonTouchTap={ this.handleToggle }
+                    iconElementRight = { 
+                        <MenuOpen />
+                    }
                 />
             </div>
         );
