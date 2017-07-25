@@ -142,3 +142,7 @@ html {
   width: 19.2rem;
   box-sizing: border-box;
 }
+
+.shouldHide {
+  display: none;
+}

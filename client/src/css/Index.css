@@ -1,0 +1,9 @@
+.should {
+    display: none;
+}
+
+.banner {
+    width: 100%;
+    height: 400px;
+    background: rgb(239, 83, 80);
+}

@@ -6,7 +6,9 @@ import { red50 } from 'material-ui/styles/colors';
 export default class MenuOpen extends Component {
     render() {
         return (
-            <IconButton>
+            <IconButton
+                onTouchTap = { this.props.onTouchTap }
+            >
                 <MoreVertIcon 
                     color = { red50 }     
                 />
