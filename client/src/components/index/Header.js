@@ -7,6 +7,7 @@ import { red400 } from 'material-ui/styles/colors';
 import './../../css/Index.css';
 
 import PopoverMenu from './PopoverMenu';
+import HeaderBanner from './HeaderBanner';
 
 export default class Header extends Component {
     constructor(props) {
@@ -33,33 +34,34 @@ export default class Header extends Component {
                     onRequestChange = { (open) => this.setState({ open })}
                 >
                     <AppBar
-                        title="目录"
+                        title="Menu"
                         onLeftIconButtonTouchTap = { this.handleClose }
                         showMenuIconButton = { false }
                         style = {{
-                            'box-shadow': 'none',
+                            'boxShadow': 'none',
                         }}
                     />
-                    <MenuItem onTouchTap={ this.handleClose }>首页</MenuItem>
-                    <MenuItem onTouchTap={ this.handleClose }>博文</MenuItem>
-                    <MenuItem onTouchTap={ this.handleClose }>分类</MenuItem>
+                    <MenuItem onTouchTap={ this.handleClose }>Home</MenuItem>
+                    <MenuItem onTouchTap={ this.handleClose }>Blog</MenuItem>
+                    <MenuItem onTouchTap={ this.handleClose }>Category</MenuItem>
                     <MenuItem onTouchTap={ this.handleClose }>Playground</MenuItem>
-                    <MenuItem onTouchTap={ this.handleClose }>关于</MenuItem>
+                    <MenuItem onTouchTap={ this.handleClose }>About & Contact</MenuItem>
                 </Drawer>
 
 
                 <AppBar
-                    title={ <span>Guardia · 瓜地</span> }
+                    title={ <span></span> }
                     iconClassNameRight="muidocs-icon-navigation-expand-more"
                     onLeftIconButtonTouchTap = { this.handleToggle }
                     iconElementRight = { <PopoverMenu /> }
                     style = {{
                         'box-shadow': 'none',
                         'background': red400,
+                        'position': 'fixed',
+                        'top': 0,
                     }}
                 />
-                <div className = "banner">
-                </div>
+                <HeaderBanner />
             </div>
         );
     };

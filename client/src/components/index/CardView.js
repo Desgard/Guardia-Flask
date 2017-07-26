@@ -5,19 +5,20 @@ import FlatButton from 'material-ui/FlatButton';
 export default class CardView extends Component {
     render() {
         return(
-            <div>
+            <div style = {{ 
+              'width': '80%', 
+              'marginLeft': 'auto',
+              'marginRight': 'auto',
+              'marginTop': '30px',
+              'marginBottom': '30px',
+              }}>
                 <Card>
                     <CardHeader
-                        title="Without Avatar"
-                        subtitle="Subtitle"
+                        title="Hello World"
+                        subtitle="2099-99-99"
                         actAsExpander={true}
-                        showExpandableButton={true}
                     />
-                    <CardActions>
-                        <FlatButton label="Action1" />
-                        <FlatButton label="Action2" />
-                    </CardActions>
-                    <CardText expandable={true}>
+                    <CardText>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                         Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
                         Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.

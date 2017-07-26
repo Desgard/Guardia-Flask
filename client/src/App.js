@@ -8,32 +8,16 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 class App extends Component {
    render(){
+    var res = [];
+    for (var i = 0; i < 5; ++ i) {
+      res.push(<CardView />)
+    }
     return(
       <div>
         <MuiThemeProvider>
           <div>
             <Header />
-            
-            <div style = {{ 
-              'width': '80%', 
-              'margin-left': 'auto',
-              'margin-right': 'auto',
-              'margin-top': '30px',
-              'margin-bottom': '30px',
-              }}
-            >
-              <CardView />
-            </div>
-            <div style = {{ 
-              'width': '80%', 
-              'margin-left': 'auto',
-              'margin-right': 'auto',
-              'margin-top': '30px',
-              'margin-bottom': '30px',
-              }}
-            >
-              <CardView />
-            </div>
+            { res }
           </div>
         </MuiThemeProvider>
         <div style = {{

@@ -2,8 +2,14 @@
     display: none;
 }
 
+.navigationBar {
+    box-shadow: none;
+    background: rgb(239, 83, 80);
+    position: fixed;
+    top: 0px;
+}
+
 .banner {
     width: 100%;
-    height: 400px;
     background: rgb(239, 83, 80);
 }
