@@ -16,7 +16,10 @@ export default class HeaderBanner extends Component {
                 className = "banner"
                 style = { bannerStyle }
             >
-                <h1>My name is Harry Twan.</h1>
+                <div>
+                    <h1>My name is Harry Twan.</h1>
+                    <h2>Guardia to record my code and experience.</h2>
+                </div>
             </div>
         );  
     };
