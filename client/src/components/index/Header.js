@@ -3,7 +3,7 @@ import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer'; 
 import MenuItem from 'material-ui/MenuItem';
 
-import { red400 } from 'material-ui/styles/colors';
+import { grey800 } from 'material-ui/styles/colors';
 import './../../css/Index.css';
 
 import PopoverMenu from './PopoverMenu';
@@ -56,7 +56,7 @@ export default class Header extends Component {
                     iconElementRight = { <PopoverMenu /> }
                     style = {{
                         'box-shadow': 'none',
-                        'background': red400,
+                        'background': grey800,
                         'position': 'fixed',
                         'top': 0,
                     }}

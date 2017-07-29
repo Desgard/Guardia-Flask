@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Header from './components/index/Header'
+import Header from './components/index/Header';
+import Footer from './components/basic/Footer';
 import CardView from './components/index/CardView';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -18,14 +19,9 @@ class App extends Component {
           <div>
             <Header />
             { res }
+            <Footer />
           </div>
         </MuiThemeProvider>
-        <div style = {{
-          'width': '100%',
-          'height': '200px',
-          'background': 'rgb(33, 33, 33)',
-        }}>
-        </div>
       </div>
     );
   }

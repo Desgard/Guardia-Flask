@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import logo from './../../logo.svg';
 import './../../css/Index.css';
+
 
 export default class HeaderBanner extends Component {
 
@@ -17,8 +19,9 @@ export default class HeaderBanner extends Component {
                 style = { bannerStyle }
             >
                 <div>
-                    <h1>My name is Harry Twan.</h1>
-                    <h2>Guardia to record my code and experience.</h2>
+                    <img src={logo} className="logo-style"/>
+                    <h1>Guardia v5.0</h1>
+                    <h2>Record code and experience in programming.</h2>
                 </div>
             </div>
         );  

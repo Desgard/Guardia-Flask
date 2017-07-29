@@ -4,15 +4,16 @@
 
 .navigationBar {
     box-shadow: none;
-    background: rgb(239, 83, 80);
+    background: rgb(66, 66, 66);
     position: fixed;
     top: 0px;
 }
 
 .banner {
     width: 100%;
-    background: rgb(239, 83, 80);
+    background: rgb(66, 66, 66);
     text-align: center;
+    color: white;
 }
 
 .banner div {
@@ -21,4 +22,12 @@
     transform: translateY(-50%);
     height: auto;
     width: 100%;
+}
+
+.logo-style {
+    width: 150px;
+}
+
+.logo-style hover {
+    opacity: 0;
 }
