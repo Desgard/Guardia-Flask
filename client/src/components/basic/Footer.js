@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
+
+import GuardiaLogo from './../../logo-all.svg';
 
 import './../../css/basic.css';
 
@@ -16,7 +17,16 @@ export default class Footer extends Component {
             <div className = "footer" >
                 <div>
                     <p>
-                        You can get the source code of the Guardia website from here.
+                        You can get the source code of the Guardia 
+                        <img 
+                            src = { GuardiaLogo } 
+                            style = {{
+                                width: "15px",
+                                verticalAlign: "middle",
+                            }}
+                        />
+                        &nbsp; 
+                        website from Github.
                     </p>
                     <p>Powered by Flask and React.js and designed by Harry Twan @ 2017 Harry Twan.</p> 
                 </div>

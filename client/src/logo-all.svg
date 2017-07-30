@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="265px" height="265px" viewBox="0 0 265 265" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 44.1 (41455) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#8FEF56" offset="0%"></stop>
+            <stop stop-color="#47C61B" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Tablet" transform="translate(-254.000000, -379.000000)">
+            <g id="Group-2" transform="translate(254.000000, 379.000000)">
+                <g id="Group">
+                    <circle id="Oval" fill="url(#linearGradient-1)" cx="132.06525" cy="132.591914" r="131.964239"></circle>
+                    <path d="M252.435732,132.591914 C252.435732,96.2717828 236.349637,63.7087599 210.913288,41.6386849 C197.916383,30.361805 182.478333,21.8244031 165.497696,16.9250391 C154.883148,13.8624605 143.66584,12.2214325 132.06525,12.2214325 C65.5864682,12.2214325 11.6947678,66.1131329 11.6947678,132.591914 C107.989463,132.591914 164.072173,132.591914 252.435732,132.591914 Z" id="Oval" fill="#FF6B52"></path>
+                    <path d="M252.435732,131.568936 C252.435732,198.047717 198.544031,251.939418 132.06525,251.939418 C65.5864682,251.939418 11.6947678,198.047717 11.6947678,131.568936 L252.435732,131.568936 Z" id="Oval" fill="#FF7B7E"></path>
+                    <ellipse id="Oval-2" fill="#000000" cx="76.1424196" cy="74.96412" rx="6.47886446" ry="8.86581453"></ellipse>
+                    <ellipse id="Oval-2-Copy-2" fill="#000000" cx="58.4107905" cy="171.124108" rx="6.47886446" ry="8.86581453"></ellipse>
+                    <ellipse id="Oval-2-Copy-3" fill="#000000" cx="207.08368" cy="171.124108" rx="6.47886446" ry="8.86581453"></ellipse>
+                    <ellipse id="Oval-2-Copy-4" fill="#000000" cx="132.06525" cy="219.545095" rx="6.47886446" ry="8.86581453"></ellipse>
+                    <ellipse id="Oval-2-Copy" fill="#000000" cx="191.398008" cy="74.96412" rx="6.47886446" ry="8.86581453"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
