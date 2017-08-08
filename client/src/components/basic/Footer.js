@@ -18,6 +18,7 @@ export default class Footer extends Component {
                 <div>
                     <p>
                         You can get the source code of the Guardia 
+                        &nbsp; 
                         <img 
                             src = { GuardiaLogo } 
                             style = {{

@@ -39,6 +39,7 @@ export default class Header extends Component {
                         showMenuIconButton = { false }
                         style = {{
                             'boxShadow': 'none',
+                            'background': grey800,
                         }}
                     />
                     <MenuItem onTouchTap={ this.handleClose }>Home</MenuItem>

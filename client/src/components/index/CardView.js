@@ -5,17 +5,17 @@ export default class CardView extends Component {
     render() {
         return(
             <div style = {{ 
-              'width': '80%', 
-              'marginLeft': 'auto',
-              'marginRight': 'auto',
-              'marginTop': '30px',
-              'marginBottom': '30px',
-              }}>
+                'width': '80%', 
+                'marginLeft': 'auto',
+                'marginRight': 'auto',
+                'marginTop': '30px',
+                'marginBottom': '30px',
+            }}>
                 <Card>
                     <CardHeader
-                        title="Hello World"
-                        subtitle="2099-99-99"
-                        actAsExpander={true}
+                        title = "Hello World"
+                        subtitle = "2099-99-99"
+                        actAsExpander = { true }
                     />
                     <CardText>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
